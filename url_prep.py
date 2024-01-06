@@ -215,15 +215,9 @@ def url_prep(url):
     return data
 
 
-url = url_prep("https://www.yandex.com")
-
-url_df = pd.DataFrame([url])
-
 model = joblib.load("model/phishing.pkl")
-
-prediction = model.predict(url_df)
 
 # phishing 1
 # leg 0
 
-print(prediction[0])
+
