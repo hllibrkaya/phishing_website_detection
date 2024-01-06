@@ -10,7 +10,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, BaggingClassifier
 from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
 from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 
@@ -22,8 +21,7 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 1000)
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
-warnings.filterwarnings('ignore', category=DeprecationWarning)
-warnings.filterwarnings('ignore', category=FutureWarning)
+warnings.filterwarnings('ignore')
 
 data = pd.read_csv("dataset/phishing.csv")
 
@@ -43,9 +41,9 @@ def base_models(X, y, scoring="accuracy"):
     models = {"Random Forest": RandomForestClassifier(), "Decision Tree": DecisionTreeClassifier(),
               "Gradient Boosting": GradientBoostingClassifier(), "SVM": SVC(),
               "ADA Boost": AdaBoostClassifier(), "Bagging Classifier": BaggingClassifier(),
-              "Naive Bayes": GaussianNB(), "XGBoost": XGBClassifier(eval_metric="logloss"),
+              "Naive Bayes": GaussianNB(), "XGBoost": XGBClassifier(),
               "Light-GBM": LGBMClassifier(verbose=-1),
-              "KNN": KNeighborsClassifier()}
+              }
     for name, model in models.items():
         cv_scores = cross_val_score(model, X, y, cv=5, scoring=scoring, n_jobs=-1)
         print(f"{name} {scoring} score: {cv_scores.mean()}")
@@ -54,18 +52,15 @@ def base_models(X, y, scoring="accuracy"):
 base_models(X_train, y_train)
 
 params = {
-    'n_estimators': [50, 100, 200, 400],
+    'n_estimators': [200, 400, 500, 750, 100],
     'criterion': ['gini', 'entropy'],
     'max_depth': [None, 10, 20, 30],
-    'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 2, 4],
-    'max_features': ['auto', 'sqrt', 'log2'],
     'bootstrap': [True, False]
 }
 
 model = RandomForestClassifier()
 
-random_search = RandomizedSearchCV(model, param_distributions=params, n_iter=150, n_jobs=-1, cv=5)
+random_search = RandomizedSearchCV(model, param_distributions=params, n_iter=300, n_jobs=-1, cv=5)
 random_search.fit(X_train, y_train)
 
 best_params = random_search.best_params_
@@ -75,18 +70,20 @@ best_model = RandomForestClassifier(**best_params)
 
 best_model.fit(X_train, y_train)
 
-predictions = model.predict(X_test)
+predictions = best_model.predict(X_test)
 
 print(classification_report(y_test, predictions))
 
 cm = confusion_matrix(y_test, predictions)
 
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=model.classes_)
+plt.figure()
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=best_model.classes_)
 disp.plot(cmap='viridis')
 plt.title('Confusion Matrix')
+plt.savefig("images/confision_matrix")
 plt.show()
 
-probs = model.predict_proba(X_test)[:, 1]
+probs = best_model.predict_proba(X_test)[:, 1]
 fpr, tpr, thresholds = roc_curve(y_test, probs)
 roc_auc = roc_auc_score(y_test, probs)
 
@@ -97,6 +94,7 @@ plt.ylim([0.0, 1.05])
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title('ROC Curve')
+plt.savefig("images/roc-auc_curve")
 plt.show()
 
 
@@ -113,6 +111,7 @@ def plot_feature_importance(model, feature_names, plot=False):
         plt.ylabel('Feature')
         plt.title('Feature Importance')
         plt.gca().invert_yaxis()
+        plt.savefig("images/feature_importance")
         plt.show()
     return feature_importance_df
 
@@ -120,3 +119,4 @@ def plot_feature_importance(model, feature_names, plot=False):
 plot_feature_importance(best_model, X.columns, plot=True)
 
 joblib.dump(best_model, "model/phishing.pkl")
+
