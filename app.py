@@ -30,16 +30,24 @@ class App(QWidget):
         self.setLayout(layout)
 
     def on_click(self):
-        text = self.lineEdit.text()
-        url = url_prep(text)
-        url_df = pd.DataFrame([url])
-        prediction = model.predict(url_df)
-        if prediction[0] == 0:
-           result = "Legitimate"
-        else:
-            result = "Phishing"
+        try:
 
-        self.label.setText(f'Prediction: {result}')
+            text = self.lineEdit.text()
+            url, error = url_prep(text)
+            url_df = pd.DataFrame([url])
+            prediction = model.predict(url_df)
+            if prediction[0] == 0:
+                result = "Legitimate"
+            else:
+                result = "Phishing"
+
+            if error != "":
+                self.label.setText(f'Error: {error}')
+
+            else:
+                self.label.setText(f'Prediction: {result}')
+        except Exception as e:
+            self.label.setText(f'Error: {e}')
 
     def on_clear(self):
         self.lineEdit.clear()

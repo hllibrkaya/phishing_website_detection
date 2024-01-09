@@ -130,9 +130,11 @@ def _req_feats(url):
         data["ratio_intMedia"] = media_ratio
 
     except requests.exceptions.RequestException as e:
+        global error
+        error = str(e)
         print("Error occured")
 
-    return data
+    return data, error
 
 
 def url_prep(url):
@@ -140,6 +142,9 @@ def url_prep(url):
     url_tld_list = [".com", ".net", ".org", ".gov", ".edu", ".mil", ".int", ".co.uk", ".fr", ".de", ".jp"]
     shortening_services = {"bit.ly": r"bit\.ly/[\w\d]+", "t.co": r"t\.co/[\w\d]+"}
     ip_pattern = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+
+    if not url.startswith("http://") and not url.startswith("https://"):
+        url = "http://" + url
 
     data["length_url"] = len(url)
 
@@ -208,16 +213,14 @@ def url_prep(url):
 
     data["nb_redirection"] = _nb_redirection(url)
 
-    results = _req_feats(url)
+    results, error = _req_feats(url)
 
     data.update(results)
 
-    return data
+    return data, error
 
 
 model = joblib.load("model/phishing.pkl")
 
 # phishing 1
 # leg 0
-
-
