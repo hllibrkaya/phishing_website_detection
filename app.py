@@ -10,10 +10,10 @@ class App(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle('Enter text')
+        self.setWindowTitle('Phishing detection')
         layout = QVBoxLayout()
 
-        self.label = QLabel('Result Enter text:')
+        self.label = QLabel('Enter the URL:')
         layout.addWidget(self.label)
 
         self.lineEdit = QLineEdit()
