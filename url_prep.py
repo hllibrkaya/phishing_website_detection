@@ -132,7 +132,6 @@ def _req_feats(url):
     except requests.exceptions.RequestException as e:
         global error
         error = str(e)
-        print("Error occured")
 
     return data, error
 
