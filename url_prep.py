@@ -69,6 +69,8 @@ def _req_feats(url):
         "whois_registered_domain": 0,
     }
 
+    global error
+    error = ""
     try:
         response = requests.get(url, headers={"User-Agent": random.choice(user_agents_list)})
         response.raise_for_status()
@@ -129,8 +131,8 @@ def _req_feats(url):
         data["nb_extCSS"] = len(external_css_links)
         data["ratio_intMedia"] = media_ratio
 
+
     except requests.exceptions.RequestException as e:
-        global error
         error = str(e)
 
     return data, error
