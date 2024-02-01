@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 import random
 import whois
-import pandas as pd
 import joblib
 
 user_agents_list = [

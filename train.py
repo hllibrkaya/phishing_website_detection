@@ -25,8 +25,6 @@ warnings.filterwarnings('ignore')
 
 data = pd.read_csv("dataset/phishing.csv")
 
-data.drop(["Unnamed: 0"], axis=1, inplace=True)
-
 label_encoder = LabelEncoder()
 
 data["status"] = label_encoder.fit_transform(data["status"])
