@@ -26,7 +26,7 @@ class App(QWidget):
         group_layout = QVBoxLayout()
 
         group_box.setFixedSize(800, 200)
-        group_box.setStyleSheet("color: white; font-size: 24px; ")
+        group_box.setStyleSheet("color: white; font-size: 54px; ")
         layout.addWidget(group_box, alignment=Qt.AlignHCenter | Qt.AlignTop)
 
         self.lineEdit = QLineEdit()
@@ -66,7 +66,7 @@ class App(QWidget):
         layout.addLayout(button_layout)
 
         self.label = QLabel('Prediction: ')
-        self.label.setStyleSheet("color: white; font-size: 24px;")
+        self.label.setStyleSheet("color: white; font-size: 44px;")
         self.label.setWordWrap(True)
         layout.addWidget(self.label)
 

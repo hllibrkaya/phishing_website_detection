@@ -1,6 +1,5 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import warnings
 import joblib
 from sklearn.model_selection import train_test_split
